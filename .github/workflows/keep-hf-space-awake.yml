@@ -16,6 +16,7 @@ jobs:
     env:
       SPACE_HEALTH_URL: https://entertainc-tg-forwarder.hf.space/health
       HF_KEEPALIVE_TOKEN: ${{ secrets.HF_KEEPALIVE_TOKEN }}
+      FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
     steps:
       - name: Ping Space health endpoint
         shell: bash
@@ -37,5 +38,29 @@ jobs:
             curl_args+=(-H "Authorization: Bearer ${HF_KEEPALIVE_TOKEN}")
           fi
 
-          curl "${curl_args[@]}" "${SPACE_HEALTH_URL}"
-          echo
+          notify_feishu() {
+            local text="$1"
+            if [[ -z "${FEISHU_WEBHOOK}" ]]; then
+              echo "FEISHU_WEBHOOK is not set; skip Feishu notification"
+              return 0
+            fi
+
+            curl \
+              --fail \
+              --silent \
+              --show-error \
+              --max-time 20 \
+              -H "Content-Type: application/json" \
+              -d "{\"msg_type\":\"text\",\"content\":{\"text\":\"${text}\"}}" \
+              "${FEISHU_WEBHOOK}" >/dev/null \
+              || echo "Failed to send Feishu notification"
+          }
+
+          if curl "${curl_args[@]}" "${SPACE_HEALTH_URL}"; then
+            echo
+            notify_feishu "✅ 容器保活成功"
+          else
+            status=$?
+            notify_feishu "❌ 容器保活失败"
+            exit "${status}"
+          fi
