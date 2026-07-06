@@ -520,14 +520,14 @@ async def process_user_info(event, rule_id, message_text):
         )
         
     if username and name:
-        logger.info(f"成功获取用户信息: {username} {name}")
-        return f"{username} {name}:\n{message_text}"
+        logger.info(f"成功获取用户信息: {username} {name} ID:{event.sender_id}")
+        return f"{username} {name} ID:{event.sender_id}:\n{message_text}"
     elif username:
-        logger.info(f"成功获取用户信息: {username}")
-        return f"{username}:\n{message_text}"
+        logger.info(f"成功获取用户信息: {username} ID:{event.sender_id}")
+        return f"{username} ID:{event.sender_id}:\n{message_text}"
     elif name:
-        logger.info(f"成功获取用户信息: {name}")
-        return f"{name}:\n{message_text}"
+        logger.info(f"成功获取用户信息: {name} ID:{event.sender_id}")
+        return f"{name} ID:{event.sender_id}:\n{message_text}"
     else:
         logger.warning(f"规则 ID: {rule_id} - 无法获取发送者信息")
         return message_text

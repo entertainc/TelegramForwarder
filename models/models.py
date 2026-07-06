@@ -1,7 +1,8 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean, ForeignKey, Enum, UniqueConstraint, inspect, text
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum, UniqueConstraint, inspect, text
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 from enums.enums import ForwardMode, PreviewMode, MessageMode, AddMode, HandleMode
+from models.database import get_engine, get_session_factory
 import logging
 import os
 from dotenv import load_dotenv
@@ -459,9 +460,7 @@ def migrate_db(engine):
 
 def init_db():
     """初始化数据库"""
-    # 创建数据库文件夹
-    os.makedirs('./db', exist_ok=True)
-    engine = create_engine('sqlite:///./db/forward.db')
+    engine = get_engine()
 
     # 首先创建所有表
     Base.metadata.create_all(engine)
@@ -473,9 +472,7 @@ def init_db():
 
 def get_session():
     """创建会话工厂"""
-    engine = create_engine('sqlite:///./db/forward.db')
-    Session = sessionmaker(bind=engine)
-    return Session()
+    return get_session_factory()()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
