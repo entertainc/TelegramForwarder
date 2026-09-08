@@ -15,6 +15,26 @@
 ## 📖 简介
 Telegram 转发器是一个强大的消息转发工具，只需要你的账号加入频道/群聊即可以将指定聊天中的消息转发到其他聊天，不需要bot进入对应的频道/群组即可监听。可用于信息流整合过滤，消息提醒，内容收藏等多种场景, 不受转发/复制禁止的限制。此外，利用 Apprise 强大的推送功能，你可以轻松将消息分发至聊天软件、邮件、短信、Webhooks、APIs 等各种平台。
 
+## Hugging Face Space 保活
+
+本仓库通过 GitHub Actions 定时请求 [entertainc/tg-forwarder](https://huggingface.co/spaces/entertainc/tg-forwarder) 的健康检查接口。
+
+- 工作流：[Keep HF Space Awake](https://github.com/entertainc/TelegramForwarder/actions/workflows/keep-hf-space-awake.yml)。
+- 配置文件：[`.github/workflows/keep-hf-space-awake.yml`](.github/workflows/keep-hf-space-awake.yml)。
+- 请求地址：`https://entertainc-tg-forwarder.hf.space/health`。
+- 调度：`0 0,8,16 * * *`，每 8 小时一次；计划时间为 UTC 00:00、08:00、16:00（北京时间 08:00、16:00、次日 00:00），实际运行可能延迟。
+- 使用 `curl` 请求，单次超时 45 秒，失败最多重试 3 次；可选的 `HF_KEEPALIVE_TOKEN` 通过仓库 Actions Secret 提供。
+- 配置 `FEISHU_WEBHOOK` Secret 后，工作流会通知保活成功或失败；未配置则跳过通知。不要把 Token 或 Webhook 写入仓库。
+
+### 停用排查与恢复
+
+如果没有新的定时运行记录，先进入上面的工作流页面检查是否被停用。公开仓库连续 60 天没有活动时，GitHub 会自动停用定时工作流。2026-09-08 排查时，该工作流状态为 `disabled_inactivity`，最近一次定时运行于北京时间 2026-09-04 20:33 成功。
+
+出现停用提示时，点击 **Enable workflow** 重新启用；有写入权限的用户也可以通过提交 cron 表达式修改来重新激活。本次将 `0 */8 * * *` 改成等价的 `0 0,8,16 * * *`，保持执行时间不变。规则见 [GitHub schedule 文档](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)。
+
+需要立即验证时可点击 **Run workflow** 手动执行，并检查 `Ping Space health endpoint` 步骤结果。启用状态和历史成功记录不代表后续请求必然成功，应以最新运行记录为准。
+
+
 ## ✨ 特性
 
 - 🔄 **多源转发**：支持从多个来源转发到指定目标
@@ -29,6 +49,7 @@ Telegram 转发器是一个强大的消息转发工具，只需要你的账号�
 ## 📋 目录
 
 - [📖 简介](#-简介)
+- [Hugging Face Space 保活](#hugging-face-space-保活)
 - [✨ 特性](#-特性)
 - [🚀 快速开始](#-快速开始)
   - [1️⃣ 准备工作](#1️⃣-准备工作)
@@ -553,5 +574,3 @@ UFB相关
 ## 📄 开源协议
 
 本项目采用 [GPL-3.0](LICENSE) 开源协议，详细信息请参阅 [LICENSE](LICENSE) 文件。
-
-
