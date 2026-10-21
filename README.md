@@ -17,7 +17,9 @@ Telegram 转发器是一个强大的消息转发工具，只需要你的账号�
 
 ## Hugging Face Space 保活
 
-本仓库通过 GitHub Actions 定时请求 [entertainc/tg-forwarder](https://huggingface.co/spaces/entertainc/tg-forwarder) 的健康检查接口。
+本仓库通过两个独立的 GitHub Actions 工作流，定时访问 [entertainc/tg-forwarder](https://huggingface.co/spaces/entertainc/tg-forwarder) 和 [entertainc/first_project](https://huggingface.co/spaces/entertainc/first_project)。
+
+### tg-forwarder
 
 - 工作流：[Keep HF Space Awake](https://github.com/entertainc/TelegramForwarder/actions/workflows/keep-hf-space-awake.yml)。
 - 配置文件：[`.github/workflows/keep-hf-space-awake.yml`](.github/workflows/keep-hf-space-awake.yml)。
@@ -26,17 +28,27 @@ Telegram 转发器是一个强大的消息转发工具，只需要你的账号�
 - 使用 `curl` 请求，单次超时 45 秒，失败最多重试 3 次；可选的 `HF_KEEPALIVE_TOKEN` 通过仓库 Actions Secret 提供。
 - 配置 `FEISHU_WEBHOOK` Secret 后，工作流会通知保活成功或失败；未配置则跳过通知。不要把 Token 或 Webhook 写入仓库。
 
+### first_project（私有 Space）
+
+- 工作流：[Keep HF first_project Awake](https://github.com/entertainc/TelegramForwarder/actions/workflows/keep-hf-first-project-awake.yml)。
+- 配置文件：[`.github/workflows/keep-hf-first-project-awake.yml`](.github/workflows/keep-hf-first-project-awake.yml)。
+- 请求地址：`https://entertainc-first-project.hf.space/`。
+- 调度同样为 `0 0,8,16 * * *`，每 8 小时一次；实际运行可能延迟。
+- 必须配置 `HF_KEEPALIVE_TOKEN` Actions Secret，令牌需具备该私有 Space 的读取权限，请求使用 Bearer 认证。
+- 单次超时 45 秒，失败最多重试 3 次；日志只输出 HTTP 状态，不输出私有应用页面内容。
+- 修改该工作流文件并推送到 `main` 时自动验证，也支持 **Run workflow** 手动执行。
+
 ### 停用排查与恢复
 
-如果没有新的定时运行记录，先进入上面的工作流页面检查是否被停用。公开仓库连续 60 天没有活动时，GitHub 会自动停用定时工作流。2026-09-08 排查时，该工作流状态为 `disabled_inactivity`，最近一次定时运行于北京时间 2026-09-04 20:33 成功。
+如果没有新的定时运行记录，先进入对应工作流页面检查是否被停用。公开仓库连续 60 天没有活动时，GitHub 会自动停用定时工作流。2026-09-08 排查时，`tg-forwarder` 的工作流状态为 `disabled_inactivity`，最近一次定时运行于北京时间 2026-09-04 20:33 成功。
 
 出现停用提示时，点击 **Enable workflow** 重新启用；有写入权限的用户也可以通过提交 cron 表达式修改来重新激活。本次将 `0 */8 * * *` 改成等价的 `0 0,8,16 * * *`，保持执行时间不变。规则见 [GitHub schedule 文档](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)。
 
-需要立即验证时可点击 **Run workflow** 手动执行，并检查 `Ping Space health endpoint` 步骤结果。启用状态和历史成功记录不代表后续请求必然成功，应以最新运行记录为准。
+需要立即验证时可在对应工作流点击 **Run workflow** 手动执行，并检查其请求步骤结果。启用状态和历史成功记录不代表后续请求必然成功，应以最新运行记录为准。
 
 ### 仓库活跃维护
 
-由 Codex 自动任务每 30 天检查一次保活工作流，并更新下面的维护记录后提交到本仓库的 `main` 分支，以降低公开仓库连续 60 天无活动导致定时工作流停用的风险。维护记录只反映检查时的实际状态。
+由 Codex 自动任务每 30 天检查一次两个保活工作流，并更新下面的维护记录后提交到本仓库的 `main` 分支，以降低公开仓库连续 60 天无活动导致定时工作流停用的风险。维护记录只反映检查时的实际状态。
 
 <!-- hf-keepalive-maintenance:start -->
 - 最近维护时间（北京时间）：2026-10-21 15:39。
