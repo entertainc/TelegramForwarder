@@ -34,6 +34,17 @@ Telegram 转发器是一个强大的消息转发工具，只需要你的账号�
 
 需要立即验证时可点击 **Run workflow** 手动执行，并检查 `Ping Space health endpoint` 步骤结果。启用状态和历史成功记录不代表后续请求必然成功，应以最新运行记录为准。
 
+### 仓库活跃维护
+
+由 Codex 自动任务每 30 天检查一次保活工作流，并更新下面的维护记录后提交到本仓库的 `main` 分支，以降低公开仓库连续 60 天无活动导致定时工作流停用的风险。维护记录只反映检查时的实际状态。
+
+<!-- hf-keepalive-maintenance:start -->
+- 最近维护时间（北京时间）：2026-10-21 15:39。
+- 工作流状态：`active`。
+- 最近定时运行：[2026-10-21 11:32（北京时间）](https://github.com/entertainc/TelegramForwarder/actions/runs/39539111074)，结论为 `success`。
+- 健康检查响应：`{"ok":true}`，来自上述运行的日志。
+<!-- hf-keepalive-maintenance:end -->
+
 
 ## ✨ 特性
 
